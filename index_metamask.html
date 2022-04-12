@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"> 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.2-rc.0/web3.min.js" integrity="sha512-REWiGZVmhU2S5eIov/DuNrsq4djWnPaAHSvXrbLLLaI0r/gW+wh1utIzxt0iB4IQLgXhNDj5mR0YMBjrkKhVMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+	<title>ETH-wallet</title>
+	<link rel="stylesheet" href="index.css">
+  <script src="metamask.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.2/ethers.umd.min.js" integrity="sha512-VLIBlhfqpqbMD6ZAPx7uzfF9/WEfVBgbcIfw5i/9k3smQlVupb1yq2WFChUcefVCBdkGrDHywOfnlMAKmK5QZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	
+  <div class="wallet-container text-center">
+    <p style="margin-left: 5px;"id="status_p" class="page-title"><i class="fa fa-align-left"></i><i class="fa fa-user"></i>Status: <span id="status">Disconnected</span></p>
+    <p style="margin-left: 5px;"id="currnet_p" class="page-title text-center"> <span id="currnet">... Network</span></p>
+
+		<!-- <p class="page-title"><i class="fa fa-align-left"></i>My E-wallet<i class="fa fa-user"></i></p> -->
+
+		<div class="amount-box text-center">
+			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png" alt="Metamask">
+			<!-- <p id="balance_p"> <span id="balance">Total Balance ... ETH</span></p> -->
+
+			<!-- <p class="amount">$ 123</p> -->
+		</div>
+    
+		<div class="btn-group text-center">
+        <!-- <button type="button" class="btn btn-outline-light" id="submitbtn" onclick="ConnectMetamaskWallet()" value=""> Connect Metamask</button> -->
+        <input type="button" value="Connect Metamask" class="btn btn-outline-light" id="submitbtn" onclick="ConnectMetamaskWallet()"/>
+        <!-- <button type="button" class="btn btn-outline-light">Switch Network</button> -->
+		</div>
+
+    <div class="btn-group text-center">
+      <select name="Network" id="network" class="btn btn-outline-light">
+        <option value="" class="btn-group text-center">Select Network</option>
+        <option value="1" class="btn-group text-center">Mainnet</option>
+        <option value="3" class="btn-group text-center">Ropsten</option>
+        <option value="4" class="btn-group text-center">Rinkeby</option>
+        <option value="42" class="btn-group text-center">Kovan</option>
+        <option value="137" class="btn-group text-center">Polygon</option>
+        <option value="56" class="btn-group text-center">BSC Smart Chain</option>
+      </select>
+    </div>
+
+        
+     
+			<div class="txn-history" id="space">
+				<p id="details"><b>Details</b></p>
+          
+				<!-- <p class="txn-list">Payment to xyz shop<span class="debit-amount">-$100</span></p> -->
+
+				<!-- <p class="txn-list">Payment to abc shop<span class="debit-amount">-$150</span></p> -->
+
+				<!-- <p class="txn-list">Credit From abc ltd<span class="credit-amount">+$300</span></p> -->
+
+				<!-- <p class="txn-list">Transfer From John Doe<span class="credit-amount">+$100</span></p> -->
+        <p id="address_p" class="txn-list">Address: <span class="credit-amount" id="address">...</span></p>     
+				<!-- <p class="txn-list">Transfer From John Doe<span class="credit-amount">+$100</span></p> -->
+        <p id="balance_p" class="txn-list">Balance: <span class="credit-amount" id="balance">... ETH</span></p>
+        <!-- <p style="margin-left: 5px;"id="currnet_p" class="text">Your Network: <span id="currnet">... Network</span></p> -->
+
+          <p id="buffer" class="page-title text-center">Connect Metmask to acsess the functionalities</p>
+          <p id="enter"><b>Enter Details to Transact</b></p>
+    <!-- <p id="meme" class="page-title text-center"><img src="data:image/jpeg;base64,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" height="200px"
+      width="300px" alt=""></p>  -->
+        <form method="post">
+          <input
+              type = "text"
+              placeholder = "Receiver's Address"
+              id = "recaddress"
+              class="mywidth"
+              required
+          />
+          <input 
+          type="number"
+          placeholder = "Enter Amount"
+          id = "ethvalue"
+          class="mywidth"
+          required
+          />
+          <!-- <button class="button" onclick="SendEther()">Transact Ether</button> -->
+      </div>
+      <div class="btn-group text-center" id="sendbtn">
+        <button type="button" class="btn btn-outline-light" id="sendEther" onclick="SendEther()">Transact Ether</button>
+      </div>
+      <div id="hashbtn">
+        <!-- <input style="display: none;" type="button" id="tranotify_p" value="" onclick="copyToClipboard()" readonly="readonly" flex > -->
+       </div>
+      </form>
+      <p style="margin-inline-end: 5px;"id="tranotify_p" class="txn-list"> <span id="tranotify">HASH</span></p>
+
+			 <div class="footer-menu">
+			<!--	<div class="row text-center">
+					<div class="col-md-3">
+						<i class="fa fa-home"></i>
+						<p>Home</p>
+					</div>
+
+					<div class="col-md-3">
+						<i class="fa fa-inbox"></i>
+						<p>Inbox</p>
+					</div> -->
+          <div>
+            <div>
+              The Blockchain Team
+            </div>
+          </div>
+
+					<div class="col-md-3">
+						<!-- <i class="fa fa-university"></i> -->
+						<p>  </p>
+					</div> 
+
+				<!--	<div class="col-md-3">
+						<i class="fa fa-barcode"></i>
+						<p>Scan</p>
+					</div> -->
+          <div>
+            
+          </div>
+				</div>
+			</div>
+</div>
+<script>
+  document.getElementById("address_p").style.visibility = "hidden";
+  document.getElementById("balance").style.visibility = "hidden";
+  document.getElementById("balance_p").style.visibility = "hidden";
+  document.getElementById("tranotify_p").style.visibility = "hidden";
+  document.getElementById("sendEther").style.visibility = "hidden";
+  document.getElementById("recaddress").style.visibility = "hidden";
+  document.getElementById("ethvalue").style.visibility = "hidden";
+  document.getElementById("details").style.visibility = "hidden";
+  document.getElementById("network").style.visibility = "hidden";
+  document.getElementById("enter").style.visibility = "hidden";
+</script>
+</body>
+</html>
